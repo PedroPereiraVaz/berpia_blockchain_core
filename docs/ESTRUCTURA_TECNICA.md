@@ -1,11 +1,11 @@
-# Estructura Técnica y Responsabilidades: `odoo_blockchain_core`
+# Estructura Técnica y Responsabilidades: `berpia_blockchain_core`
 
 Este documento detalla la estructura de archivos del módulo y la responsabilidad específica de cada componente. Está dirigido a desarrolladores que necesitan entender o mantener el núcleo del sistema.
 
 ## 📂 Árbol de Archivos
 
 ```text
-odoo_blockchain_core/
+berpia_blockchain_core/
 ├── __init__.py
 ├── __manifest__.py
 │
@@ -40,50 +40,47 @@ odoo_blockchain_core/
 Esta carpeta contiene la **lógica de negocio** pura.
 
 - **`blockchain_registry_entry.py`**:
-
-  - **Responsabilidad**: Es el corazón del sistema. Actúa como base de datos de auditoría local y cola de mensajes.
-  - **Funciones Clave**:
-    - `process_blockchain_queue()`: Cron unificado. Procesa tanto **Registros** como **Revocaciones** pendientes si el gas es barato.
-    - `check_transaction_receipts()`: Cron que monitorea recibos de transacciones (Confirmación de registro o revocación).
-    - `action_register()`: Encola documento para registro.
-    - `action_revoke()`: Encola documento para revocación (Solo si ya está confirmado).
-    - `action_verify_on_chain_manual()`: Consulta `verifyDocument` en el contrato (Call View).
-    - `_post_to_related_chatter()`: Helper para escribir confirmar/error en el muro del documento origen.
+    - **Responsabilidad**: Es el corazón del sistema. Actúa como base de datos de auditoría local y cola de mensajes.
+    - **Funciones Clave**:
+        - `process_blockchain_queue()`: Cron unificado. Procesa tanto **Registros** como **Revocaciones** pendientes si el gas es barato.
+        - `check_transaction_receipts()`: Cron que monitorea recibos de transacciones (Confirmación de registro o revocación).
+        - `action_register()`: Encola documento para registro.
+        - `action_revoke()`: Encola documento para revocación (Solo si ya está confirmado).
+        - `action_verify_on_chain_manual()`: Consulta `verifyDocument` en el contrato (Call View).
+        - `_post_to_related_chatter()`: Helper para escribir confirmar/error en el muro del documento origen.
 
 - **`blockchain_mixin.py`**:
-
-  - **Responsabilidad**: Interfaz "Plug & Play" para otros desarrolladores.
-  - **Funciones Clave**:
-    - `_compute_blockchain_hash()`: Método abstracto (Hash del dato o del archivo).
-    - `action_blockchain_register()`: Wrapper seguro para crear la entrada.
-    - `action_blockchain_revoke()`: Wrapper para solicitar revocación.
-    - `_post_blockchain_message()`: Escribe en el chatter del modelo heredero.
+    - **Responsabilidad**: Interfaz "Plug & Play" para otros desarrolladores.
+    - **Funciones Clave**:
+        - `_compute_blockchain_hash()`: Método abstracto (Hash del dato o del archivo).
+        - `action_blockchain_register()`: Wrapper seguro para crear la entrada.
+        - `action_blockchain_revoke()`: Wrapper para solicitar revocación.
+        - `_post_blockchain_message()`: Escribe en el chatter del modelo heredero.
 
 - **`blockchain_config.py`**:
-
-  - **Responsabilidad**: Gestionar la configuración global del sistema en `res.config.settings`.
-  - **Detalle**: Almacena URL del RPC, Contract Address y Chain ID. Verifica la presencia de la variable de entorno `ODOO_BLOCKCHAIN_PRIVATE_KEY` pero **NO** la guarda en BD.
+    - **Responsabilidad**: Gestionar la configuración global del sistema en `res.config.settings`.
+    - **Detalle**: Almacena URL del RPC, Contract Address y Chain ID. Verifica la presencia de la variable de entorno `ODOO_BLOCKCHAIN_PRIVATE_KEY` pero **NO** la guarda en BD.
 
 - **`abi.py`**:
-  - **Responsabilidad**: Contiene la definición JSON (Application Binary Interface) del contrato `UniversalDocumentRegistry`. Es necesario para que la librería `web3.py` sepa cómo codificar las llamadas al contrato.
+    - **Responsabilidad**: Contiene la definición JSON (Application Binary Interface) del contrato `UniversalDocumentRegistry`. Es necesario para que la librería `web3.py` sepa cómo codificar las llamadas al contrato.
 
 ### 3. Vistas (`/views`)
 
 Definen la interfaz de usuario (Backend).
 
 - **`blockchain_registry_entry_views.xml`**:
-  - Define cómo se ve el log de transacciones (`tree` y `form`). Muestra estado, hash, link al documento original y mensajes de error.
+    - Define cómo se ve el log de transacciones (`tree` y `form`). Muestra estado, hash, link al documento original y mensajes de error.
 - **`res_config_settings_views.xml`**:
-  - Añade la sección "Blockchain Core" al panel de control general de Odoo.
+    - Añade la sección "Blockchain Core" al panel de control general de Odoo.
 - **`blockchain_menu_views.xml`**:
-  - Crea la estructura de menús (Odoo > Ajustes > Técnico > Blockchain) para acceder a los registros.
+    - Crea la estructura de menús (Odoo > Ajustes > Técnico > Blockchain) para acceder a los registros.
 
 ### 4. Datos y Cron (`/data`)
 
 - **`ir_cron_data.xml`**:
-  - Programa la ejecución automática de los métodos Python definidos en `models`.
-  - **Cron 1**: Procesa la cola de envío (default: cada 5 min).
-  - **Cron 2**: Verifica recibos/confirmaciones (default: cada 10 min).
+    - Programa la ejecución automática de los métodos Python definidos en `models`.
+    - **Cron 1**: Procesa la cola de envío (default: cada 5 min).
+    - **Cron 2**: Verifica recibos/confirmaciones (default: cada 10 min).
 
 ### 5. Seguridad (`/security`)
 

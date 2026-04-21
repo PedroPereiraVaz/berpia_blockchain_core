@@ -54,10 +54,10 @@ Esta es la sección más importante. Si estás creando un módulo (ej. `odoo_aca
 
 ### Paso 1: Añadir Dependencia
 
-En tu `__manifest__.py`, añade `odoo_blockchain_core` como dependencia.
+En tu `__manifest__.py`, añade `berpia_blockchain_core` como dependencia.
 
 ```python
-'depends': ['base', 'odoo_blockchain_core'],
+'depends': ['base', 'berpia_blockchain_core'],
 ```
 
 ### Paso 2: Heredar del Mixin Universal

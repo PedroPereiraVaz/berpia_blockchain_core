@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <app data-string="Blockchain Core" string="Blockchain Core" name="odoo_blockchain_core" groups="odoo_blockchain_core.group_blockchain_manager">
+                <app data-string="Blockchain Core" string="Blockchain Core" name="berpia_blockchain_core" groups="berpia_blockchain_core.group_blockchain_manager">
                     <block title="Network Configuration" name="blockchain_network_setting">
                         <setting id="blockchain_rpc_connection" string="Blockchain Connection" help="Configure the connection to the Ethereum-compatible network.">
                             <group>
